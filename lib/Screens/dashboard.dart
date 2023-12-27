@@ -43,14 +43,30 @@ class _DashboardState extends State<Dashboard> {
             ),
             Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Container(child: TextButton(
-                  onPressed: (){},
-                  child: Text("Send"),
-                ),),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.pink,
+                    borderRadius: BorderRadius.circular(10)
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 16.0,bottom: 16.0,right: 20,left: 20),
+                    child: TextButton(
+                    onPressed: (){},
+                    child: Text("Send",style: TextStyle(color: Colors.white),),
+                ),
+                  ),),
 
-                Container(child: TextButton(
-                  onPressed: (){},
-                  child: Text("Request"),
+                Container(
+                  decoration: BoxDecoration(
+                      color: Colors.pink,
+                      borderRadius: BorderRadius.circular(10)
+                  ),
+                  child: Padding(
+                  padding: const EdgeInsets.only(top: 16.0,bottom: 16.0,right: 20,left: 20),
+                  child: TextButton(
+                    onPressed: (){},
+                    child: Text("Request",style: TextStyle(color: Colors.white),),
+                  ),
                 ),)
               ],
             ),
