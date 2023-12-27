@@ -34,10 +34,6 @@ Future<bool> userLogin(String username, String password) async {
     'Content-Type': 'application/json',
   };
 
-  print("1");
-  print(username);
-  print(password);
-
   // Encode the username and password in the URL
       String url="http://10.7.92.91:8000/login?Username=$username&password=$password";  print("3");
   var data = await getData(url,headers);
