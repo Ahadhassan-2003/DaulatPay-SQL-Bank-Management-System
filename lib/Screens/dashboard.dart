@@ -1,4 +1,3 @@
-import 'package:daulatpay/Screens/Login.dart';
 import 'package:flutter/material.dart';
 
 class Dashboard extends StatefulWidget {
@@ -20,24 +19,18 @@ class _DashboardState extends State<Dashboard> {
           children: [
             Padding(
               padding: const EdgeInsets.all(32.0),
-              child: GestureDetector(
-                onTap: (){
-                  Navigator.push(context,
-                  MaterialPageRoute(builder: (context)=>Login()));
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.green
-                  ),
-                  height: 200,
-                  width: MediaQuery.of(context).size.width,
-                  child: Column(
-                    children: [
-                      Text("Name"),
-                      Text("Card No"),
-                    ],
-                  ),
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.green
+                ),
+                height: 200,
+                width: MediaQuery.of(context).size.width,
+                child: Column(
+                  children: [
+                    Text("Name"),
+                    Text("Card No"),
+                  ],
                 ),
               ),
             ),
