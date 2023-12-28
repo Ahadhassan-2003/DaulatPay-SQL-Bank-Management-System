@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:daulatpay/Navigation.dart';
 import 'package:daulatpay/Screens/SignUp.dart';
 import 'package:daulatpay/Screens/dashboard.dart';
 import 'package:flutter/material.dart';
@@ -21,30 +22,13 @@ Future<String> getData(String url,Map<String,String> header) async {
   }
 }
 
-Future<bool> userLogin(String username, String password) async {
-  String user = 'amaan';
-  String pass = '12345';
-
-  // Combine the username and password into a single string
-  String credentials = base64.encode(utf8.encode('$user:$pass'));
-
-  // Set up the request headers with Basic Authentication
-  Map<String, String> headers = {
-    'Authorization': 'Basic $credentials',
-    'Content-Type': 'application/json',
-  };
-
-  // Encode the username and password in the URL
-      String url="http://10.7.92.91:8000/login?Username=$username&password=$password";  print("3");
-  var data = await getData(url,headers);
-  print("4");
-  var decodedObjects = jsonDecode(data);
-  return decodedObjects["success"];
-}
-
 class _LoginState extends State<Login> {
   var email=new TextEditingController();
   var password=new TextEditingController();
+  var name;
+  var accountno;
+  var currentamount;
+  List? transactions;
   @override
   void initState() {
     super.initState();
@@ -88,7 +72,12 @@ class _LoginState extends State<Login> {
                       bool success=await userLogin(email.text, password.text);
                       if(success)
                       {
-                        Navigator.push(context,MaterialPageRoute(builder: (context)=>Dashboard()));
+                        Navigator.push(context,MaterialPageRoute(builder: (context)=>Navigation(
+                          name: name,
+                          AccountNo: accountno,
+                          cash: currentamount,
+                          transactions: transactions,
+                        )));
                       }
                     },
                     child: Text("Login")),
@@ -114,4 +103,31 @@ class _LoginState extends State<Login> {
       ),
     );
   }
+
+  Future<bool> userLogin(String username, String password) async {
+    String user = 'amaan';
+    String pass = '12345';
+
+    // Combine the username and password into a single string
+    String credentials = base64.encode(utf8.encode('$user:$pass'));
+
+    // Set up the request headers with Basic Authentication
+    Map<String, String> headers = {
+      'Authorization': 'Basic $credentials',
+      'Content-Type': 'application/json',
+    };
+
+    // Encode the username and password in the URL
+    String url="http://10.7.94.25:8000/login?Username=$username&Password=$password";  print("3");
+    var data = await getData(url,headers);
+    print("4");
+    var decodedObjects = jsonDecode(data);
+    print(decodedObjects);
+    name=decodedObjects["FirstName"];
+    currentamount=decodedObjects["CashAmount"];
+    transactions=decodedObjects["Transactions"];
+    accountno=decodedObjects["AccountNumber"];
+    return decodedObjects["success"];
+  }
+
 }

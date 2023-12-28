@@ -3,9 +3,19 @@ import 'package:daulatpay/Screens/RecieveRequest.dart';
 import 'package:daulatpay/Screens/Transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 class Dashboard extends StatefulWidget {
-  const Dashboard({super.key});
-
+  Dashboard({
+    super.key,
+  required this.AccountNo,
+  required this.name,
+  required this.cash,
+  required this.transactions
+  });
+  var AccountNo;
+  var cash;
+  var name;
+  List? transactions;
   @override
   State<Dashboard> createState() => _DashboardState();
 }
@@ -15,6 +25,7 @@ class _DashboardState extends State<Dashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: Container(),
       ),
       body: Container(
         child: Column(
@@ -35,17 +46,33 @@ class _DashboardState extends State<Dashboard> {
                       ),
                       height: 310,
                       width: MediaQuery.of(context).size.width*0.55,
-                      child: const Column(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      child:  Stack(
+                        alignment: Alignment.center,
                         children: [
-                          Text("Ammar"),
-                          Text("123451234511"),
-                          Text("1000",style: TextStyle(fontSize: 30),),
-                          Padding(
-                            padding: EdgeInsets.only(right:10.0,bottom: 10),
-                            child: Row(mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Icon(Icons.arrow_forward_outlined),
-                              ],
+                          Align(
+                            alignment: Alignment.topLeft,
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Text('${widget.name}',style: GoogleFonts.actor(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 25
+                              ),),
+                            ),
+                          ),
+                          //Text('${widget.AccountNo}',style: TextStyle(fontSize: 20)),
+                          Align(
+                            alignment: Alignment.bottomRight,
+                            child: Padding(
+                              padding: EdgeInsets.only(right:10.0,bottom: 10),
+                              child: Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text('${widget.cash}',style: TextStyle(fontSize: 30),),
+                                    Icon(Icons.arrow_forward_outlined),
+                                  ],
+                                ),
+                              ),
                             ),
                           )
                         ],
@@ -128,13 +155,47 @@ class _DashboardState extends State<Dashboard> {
             ),
             Container(
               child: Expanded(
-                child: ListView(
-                  children: [
-                    ListTile(title: Text("500"),),
-                    ListTile(title: Text("500"),),
-                    ListTile(title: Text("1000"),)
-                  ],
-                ),
+                child: ListView.builder(
+                    itemCount: widget.transactions?.length,
+                    itemBuilder: (context,index)
+                    {
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10)
+                          ),
+                          child: ListTile(
+                            title: Column(
+                              children: [
+                                Row(
+                                  children:
+                                  [
+                                    Text("To: "),
+                                    Text(widget.transactions?[index]["RecieverAccountNumber"]),
+                                  ],
+                                ),
+                                Row(
+                                  children:
+                                  [
+                                    Text("Amount: "),
+                                    Text(widget.transactions?[index]["Amount"]),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            subtitle: Row(
+                              children: [
+                                Text("Date: "),
+                                Text(widget.transactions?[index]["TransactionDate"]),
+                              ],
+                            ),
+
+                          ),
+                        ),
+                      );
+                    }
+                    ),
               ),
             )
           ],
