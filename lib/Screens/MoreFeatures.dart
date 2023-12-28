@@ -15,10 +15,24 @@ class _MoreFeaturesState extends State<MoreFeatures> {
         child: Column(
           children: [
             Container(
-              child: (Text("Buy Tickets")),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.grey
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: (Text("Buy Tickets")),
+              ),
             ),
             Container(
-              child: Text("Mess Bill"),
+              decoration: BoxDecoration(
+                color: Colors.grey,
+                borderRadius: BorderRadius.circular(10)
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Text("Mess Bill"),
+              ),
             ),
             Container(
               child: Text("Sports Complex Fee"),

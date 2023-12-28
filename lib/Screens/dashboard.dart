@@ -21,6 +21,7 @@ class _DashboardState extends State<Dashboard> {
           children: [
             Row(
               children: [
+
                 Padding(
                   padding: const EdgeInsets.only(left: 15.0,top: 10,bottom: 20,right: 15),
                   child: GestureDetector(
@@ -115,7 +116,7 @@ class _DashboardState extends State<Dashboard> {
                         ),),
                     )
                   ],
-                )
+                ),
               ],
             ),
             Row(
