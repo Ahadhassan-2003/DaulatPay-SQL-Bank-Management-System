@@ -2,6 +2,7 @@ from MySQLdb import _mysql
 from flask import Flask, request,jsonify
 from flask_basicauth import BasicAuth
 from flask_cors import CORS
+import random as rand
 import json
 
 app = Flask(__name__)
@@ -54,7 +55,7 @@ def login():
 @basic_auth.required
 def SignUp():
     Username = f'"{str(request.args["Username"])}"'
-    password = f'"{str(request.args["password"])}"'
+    password = f'"{str(request.args["Password"])}"'
     Firstname = f'"{str(request.args["FirstName"])}"'
     LastName = f'"{str(request.args["LastName"])}"'
     Email = f'"{str(request.args["Email"])}"'
@@ -64,15 +65,22 @@ def SignUp():
     session = f'"123"'
     dob = f'"{str(request.args["DOB"])}"'
     phoneno = f'"{str(request.args["Phone"])}"'
+    AccountNumber = rand.randint(100000, 999999)
     db.query(f'''INSERT INTO USER 
-    (UserID, Username, Password, FirstName, LastName, Email, Address, CashAmount, DateOfBirth, PhoneNumber, SessionID)
+    (AccountNumber, Username, Password, FirstName, LastName, Email, Address, CashAmount, DateOfBirth, PhoneNumber, SessionID,CMS)
     VALUES
-    ({CMS}, {Username}, {password}, {Firstname}, {LastName},{Email},{address},{cash}, {dob}, {phoneno},{session})
+    ({AccountNumber}, {Username}, {password}, {Firstname}, {LastName},{Email},{address},{cash}, {dob}, {phoneno},{session},{CMS})
     ''')
     r = db.store_result()
-    r = r.fetch_row(maxrows=1)
+    db.query(f"create view statement_{AccountNumber} as select * from transaction where SenderAccountNumber = {AccountNumber} or RecieverAccountNumber = {AccountNumber} order by TransactionDate desc")
+    rv = db.store_result()
     return {
-        "success":True
+        "success":True,
+        "Username": Username,
+        "FirstName": Firstname,
+        "LastName": LastName,
+        "CashAmount": cash,
+        "SessionID": session,
     }
 
 
