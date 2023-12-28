@@ -69,7 +69,7 @@ class _Bill_PaymentsState extends State<Bill_Payments> {
 void PayBills()
 async
   {
-    String url="${obj.ipaddress}/transaction?reciever=${widget.labelname}&amount=$amount";
+    String url="${obj.ipaddress}/bill_payment?billtype=${widget.labelname}&amount=$amount";
     obj.setheader();
     var data = await getData(url,obj.headers);
     print("4");
