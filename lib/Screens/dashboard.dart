@@ -116,15 +116,6 @@ class _DashboardState extends State<Dashboard> {
                     )
                   ],
                 ),
-                Container(child: TextButton(
-                  onPressed: (){},
-                  child: Text("Send"),
-                ),),
-
-                Container(child: TextButton(
-                  onPressed: (){},
-                  child: Text("Request"),
-                ),)
               ],
             ),
             Row(

@@ -1,3 +1,4 @@
+import 'package:daulatpay/Screens/Bill%20Payments.dart';
 import 'package:flutter/material.dart';
 class MoreFeatures extends StatefulWidget {
   const MoreFeatures({super.key});
@@ -12,35 +13,57 @@ class _MoreFeaturesState extends State<MoreFeatures> {
     return Scaffold(
       appBar: AppBar(),
       body: Container(
-        child: Column(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: Colors.grey
+        child: Padding(
+          padding: const EdgeInsets.only(left: 20,right: 20),
+          child: Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ReturnedContainer("Semester Fee"),
+                  ReturnedContainer("Mess Bill"),
+                ],
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: (Text("Buy Tickets")),
+              Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ReturnedContainer("Sports Complex Fee"),
+                  ReturnedContainer("Saddle Club Fee"),
+                ],
               ),
-            ),
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.circular(10)
+              Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ReturnedContainer("Hostel Fee"),
+                  ReturnedContainer("Bill Payment"),
+                ],
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Text("Mess Bill"),
+              Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ReturnedContainer("Buy Tickets"),
+                  ReturnedContainer("Mobile Load"),
+                ],
               ),
-            ),
-            Container(
-              child: Text("Sports Complex Fee"),
-            ),
-            Container(
-              child: Text("Semester Fee"),
-            )
-          ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+  Widget ReturnedContainer(String label)
+  {
+    return GestureDetector(
+      onTap: ()
+      {
+        Navigator.push(context, MaterialPageRoute(builder: (context)=>Bill_Payments(labelname: label,)));
+      },
+      child: Container(
+        height: 110,
+        width: 90,
+        decoration: BoxDecoration(
+          color: Colors.grey,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(label,textAlign: TextAlign.center,),
         ),
       ),
     );
