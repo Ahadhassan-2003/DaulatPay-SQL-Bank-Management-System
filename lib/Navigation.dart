@@ -1,29 +1,53 @@
+import 'package:custom_navigation_bar/custom_navigation_bar.dart';
+import 'package:daulatpay/Screens/MoreFeatures.dart';
 import 'package:daulatpay/Screens/Profile.dart';
 import 'package:daulatpay/Screens/dashboard.dart';
-import 'package:daulatpay/Screens/MoreFeatures.dart';
 import 'package:flutter/material.dart';
-import 'package:custom_navigation_bar/custom_navigation_bar.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 class Navigation extends StatefulWidget {
-  const Navigation({Key? key}) : super(key: key);
+  Navigation({
+    Key? key,
+    required this.AccountNo,
+    required this.name,
+    required this.cash,
+    required this.transactions,
+  });
+
+  var AccountNo;
+  var cash;
+  var name;
+  List? transactions;
 
   @override
   State<Navigation> createState() => _NavigationState();
 }
 
 class _NavigationState extends State<Navigation> {
-  List<Widget> screens=[Dashboard(),MoreFeatures(),Profile()];
-  int _currentindex=0;
+  late List<Widget> screens;
+
+  int _currentindex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Initialize the screens list in the constructor body
+    screens = [
+      CallDashboard(),
+      MoreFeatures(),
+      Profile(name:widget.name),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: CustomNavigationBar(
-        onTap: (value){
+        onTap: (value) {
           setState(() {
-            _currentindex=value;
+            _currentindex = value;
           });
-          },
+        },
         currentIndex: _currentindex,
         items: [
           CustomNavigationBarItem(
@@ -52,9 +76,18 @@ class _NavigationState extends State<Navigation> {
         strokeColor: Colors.blue, // Color of the bar
         unSelectedColor: Colors.grey, // Color when not selected
         iconSize: 30.0, // Size of the icon
-        borderRadius: Radius.circular(10.0), // Border radius of the ba/ Width of the icon container
+        borderRadius: Radius.circular(10.0), // Border radius of the bar/ Width of the icon container
       ),
       body: screens[_currentindex],
+    );
+  }
+
+  Widget CallDashboard() {
+    return Dashboard(
+      AccountNo: widget.AccountNo,
+      name: widget.name,
+      cash: widget.cash,
+      transactions: widget.transactions,
     );
   }
 }

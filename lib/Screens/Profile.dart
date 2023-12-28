@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 class Profile extends StatefulWidget {
-  const Profile({super.key});
-
+  Profile({super.key,
+  required this.name,
+  });
+  String name;
   @override
   State<Profile> createState() => _ProfileState();
 }
@@ -24,7 +26,7 @@ class _ProfileState extends State<Profile> {
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text("Ammar Bin Akram",textAlign: TextAlign.center,style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
+                  child: Text("${widget.name}",textAlign: TextAlign.center,style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
                 ),),
             ),
             Padding(
