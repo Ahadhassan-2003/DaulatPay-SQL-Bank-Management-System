@@ -1,7 +1,8 @@
 from MySQLdb import _mysql
-from flask import Flask, request
+from flask import Flask, request,jsonify
 from flask_basicauth import BasicAuth
 from flask_cors import CORS
+import json
 
 app = Flask(__name__)
 CORS(app)
@@ -26,12 +27,21 @@ def login():
             print(row[0])
             Pass = row[2].decode("utf-8")
             if password == Pass:
+                def get_column_names(result):
+                    return [desc[0] for desc in result.describe()]
+
+                db.query(f"Select * from transaction where SenderAccountNumber = {row[0].decode('utf-8')} or RecieverAccountNumber = {row[0].decode('utf-8')} order by TransactionDate desc")
+                rt = db.store_result()
+                trows = rt.fetch_row(maxrows=100)
+                column_names = get_column_names(rt)
+                decoded_trows = [dict(zip(column_names, map(lambda x: x.decode("utf-8"), trow))) for trow in trows]                
                 return {"success": True, 
                         "AccountNumber": row[0].decode("utf-8"),
                         "FirstName": row[3].decode("utf-8"),
                         "LastName": row[4].decode("utf-8"),
                         "CashAmount": row[7].decode("utf-8"),
                         "SessionID": row[10].decode("utf-8"),
+                        "Transactions": decoded_trows
                         }
             else:
                 return {"success": False}
