@@ -1,5 +1,5 @@
 from MySQLdb import _mysql
-from flask import Flask, request,jsonify
+from flask import Flask, request, jsonify
 from flask_basicauth import BasicAuth
 from flask_cors import CORS
 import random as rand
@@ -11,12 +11,12 @@ from email.mime.base import MIMEBase
 from email import encoders
 import pandas as pd
 
-
 app = Flask(__name__)
 CORS(app)
 app.config['BASIC_AUTH_USERNAME'] = 'amaan'
 app.config['BASIC_AUTH_PASSWORD'] = '12345'
 basic_auth = BasicAuth(app)
+
 
 def get_column_names(result):
     return [desc[0] for desc in result.describe()]
@@ -38,22 +38,23 @@ def login():
             print(row[0])
             Pass = row[2].decode("utf-8")
             if password == Pass:
+
                 #Use the below query when all changes are made to the database
                 db.query(f"""Select * from transaction where SenderAccountNumber = {row[0].decode('utf-8')} or 
                          ReceiverAccountNumber = {row[0].decode('utf-8')} order by TransactionDate desc""")
                 rt = db.store_result()
                 trows = rt.fetch_row(maxrows=100)
                 column_names = get_column_names(rt)
-                decoded_trows = [dict(zip(column_names, map(lambda x: x.decode("utf-8"), trow))) for trow in trows]                
+                decoded_trows = [dict(zip(column_names, map(lambda x: x.decode("utf-8"), trow))) for trow in trows]
                 return {
-                        "success": True, 
-                        "AccountNumber": row[0].decode("utf-8"),
-                        "FirstName": row[3].decode("utf-8"),
-                        "LastName": row[4].decode("utf-8"),
-                        "CashAmount": row[7].decode("utf-8"),
-                        "SessionID": row[10].decode("utf-8"),
-                        "Transactions": decoded_trows
-                    }
+                    "success": True,
+                    "AccountNumber": row[0].decode("utf-8"),
+                    "FirstName": row[3].decode("utf-8"),
+                    "LastName": row[4].decode("utf-8"),
+                    "CashAmount": row[7].decode("utf-8"),
+                    "SessionID": row[10].decode("utf-8"),
+                    "Transactions": decoded_trows
+                }
             else:
                 return {"success": False}
 
@@ -78,6 +79,7 @@ def deposit():
     #query to update the amount in user's account
     db.query(f"UPDATE user SET CashAmount = {res} WHERE AccountNumber = {account_number}")
     r = db.store_result()
+
 
     #query to insert this transaction in the transaction table
     transaction_status = "Successful"
@@ -180,6 +182,27 @@ def SignUp():
     }
 
 
+@app.route("/withdrawal", methods=["GET"])
+def withdrawal():
+    account_number = f"{str(request.args['account_no'])}"
+    account_number = int(account_number)
+    amount = f"{str(request.args['amount'])}"
+    amount = int(amount)
+    db.query(f"Select CashAmount from user where AccountNumber = {account_number}")
+    result = db.store_result()
+    rows = result.fetch_row()
+    res = rows[0][0].decode("utf-8")
+    print(res)
+    am = float(res)
+    am -= amount
+    db.query(f"UPDATE user SET CashAmount = {am} WHERE AccountNumber = {account_number}")
+    r = db.store_result()
+    return {
+        "account_number": account_number,
+        "amount": am,
+        "message": "Money withdrawal was successful"
+    }
+
 @app.route("/generate_statement", methods=["GET"])
 def generate_statement():
     account_number = f"{str(request.args['AccountNumber'])}"
@@ -206,6 +229,7 @@ def generate_statement():
     remail = remail[0][0]
     remail = remail.decode("utf-8")
     print(remail)
+
     def sendmail(remail):
         smtp_user = 'amaanashraf222999@gmail.com'
         smtp_password = 'bmkebaddondkkgop'
@@ -235,11 +259,13 @@ def generate_statement():
             s.starttls()
             s.login(smtp_user, smtp_password)
             s.sendmail(smtp_user, remail, msg.as_string())
+
     sendmail(remail)
     return {
         "account_number": account_number,
         "transactions": decoded_trows
     }
+
 
 @app.route("/get_bill_amount", methods=["GET"])
 def get_bill_amount():
@@ -250,7 +276,7 @@ def get_bill_amount():
     rows = result.fetch_row()
     res = rows[0][0].decode("utf-8")
     print(res)
-    return{
+    return {
         "invoice_number": invoice_number,
         "amount": res
     }
@@ -311,6 +337,7 @@ def bill_payment():
     return {"success": True}
 
 
+
 @app.route("/generate_otp", methods=["GET"])
 def generate_otp():
     account_number = f"{str(request.args['account_no'])}"
@@ -321,6 +348,7 @@ def generate_otp():
     rows = r.fetch_row()
     remail = rows[0][0].decode("utf-8")
     print(remail)
+
     def sendmail(remail):
         smtp_user = 'amaanashraf222999@gmail.com'
         smtp_password = 'bmkebaddondkkgop'
@@ -333,7 +361,9 @@ def generate_otp():
         msg["To"] = remail
 
         # Add email body
+
         msg.attach(MIMEText("Your OTP for Password Change is: " + str(otp) + ".\nPlease do not share this with anyone else.\nThank you for using Daulat Pay."))
+
 
         # Send the email
         with smtplib.SMTP(server, port) as s:
@@ -341,6 +371,7 @@ def generate_otp():
             s.starttls()
             s.login(smtp_user, smtp_password)
             s.sendmail(smtp_user, remail, msg.as_string())
+
     sendmail(remail)
     return {
         "status": "OTP sent successfully",
@@ -399,5 +430,5 @@ db = _mysql.connect(
 )
 
 if __name__ == '__main__':
-    app.run(  #ssl_context=('D:\PyCharmProjects\cert.pem', 'D:\PyCharmProjects\key.pem'),
+    app.run(  # ssl_context=('D:\PyCharmProjects\cert.pem', 'D:\PyCharmProjects\key.pem'),
         debug=True, host='0.0.0.0', port=8000)
