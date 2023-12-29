@@ -58,6 +58,7 @@ class _Bill_PaymentsState extends State<Bill_Payments> {
               child:TextButton(
                 child: Text("Send",style: TextStyle(color: Colors.white),),
                 onPressed: (){
+                  PayBills();
                 },
               ),
             ),
@@ -69,7 +70,7 @@ class _Bill_PaymentsState extends State<Bill_Payments> {
 void PayBills()
 async
   {
-    String url="${obj.ipaddress}/transaction?reciever=${widget.labelname}&amount=$amount";
+    String url="${obj.ipaddress}/bill_payment?amount=${amount.text}&billtype=${widget.labelname}";
     obj.setheader();
     var data = await getData(url,obj.headers);
     print("4");
