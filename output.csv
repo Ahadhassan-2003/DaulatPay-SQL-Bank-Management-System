@@ -1,0 +1,5 @@
+TransactionID,Amount,TransactionDate,SenderAccountNumber,ReceiverAccountNumber,TransactionType,TransactionDescription,MerchantName,TransactionStatus
+11,10,2023-12-29,2,1,money_transfer,Gym fee is paid,NUST Sports Complex,Successful
+16,1000,2023-12-29,2,1,money_transfer,Gym fee is paid,NUST Sports Complex,Successful
+2,100,2023-12-27,1,2,Money Transfer,Testing,Nust Swimming Pool,Successful
+9,10,2023-12-27,1,2,Money Transfer,Testing,Nust Swimming Pool,Successful
