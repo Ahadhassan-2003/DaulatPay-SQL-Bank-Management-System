@@ -254,6 +254,20 @@ def bill_payment():
     return {"success": True}
 
 
+@app.route("/change_password",methods=["GET"])
+def change_password():
+    new_password = f'"{str(request.args["password"])}"'
+    account_number = f'"{str(request.args["account_no"])}"'
+
+    db.query(f"""UPDATE user SET Password = {new_password} WHERE AccountNumber = {account_number}""")
+    db.store_result()
+
+    return{
+        "success": True,
+        "message": "Password change was successful"
+    }
+
+
 db = _mysql.connect(
     host="25.62.4.171",
     port=3306,

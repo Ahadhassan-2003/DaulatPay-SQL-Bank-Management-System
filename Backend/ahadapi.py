@@ -39,8 +39,8 @@ def login():
             Pass = row[2].decode("utf-8")
             if password == Pass:
                 #Use the below query when all changes are made to the database
-                #db.query(f"Select * from statement_{row[0].decode('utf-8')}")
-                db.query(f"Select * from transaction where SenderAccountNumber = {row[0].decode('utf-8')} or ReceiverAccountNumber = {row[0].decode('utf-8')} order by TransactionDate desc")
+                db.query(f"""Select * from transaction where SenderAccountNumber = {row[0].decode('utf-8')} or 
+                         ReceiverAccountNumber = {row[0].decode('utf-8')} order by TransactionDate desc""")
                 rt = db.store_result()
                 trows = rt.fetch_row(maxrows=100)
                 column_names = get_column_names(rt)
@@ -185,6 +185,7 @@ def withdrawal():
         "message": "Money withdrawal was successful"
     }
 
+
 @app.route("/generate_statement", methods=["GET"])
 def generate_statement():
     account_number = f"{str(request.args['AccountNumber'])}"
@@ -247,10 +248,13 @@ def generate_statement():
     }
 
 
+
+
+
 db = _mysql.connect(
     host="25.62.4.171",
     port=3306,
-    user="Ahad",
+    user="Ammar",
     password="alexbhatti",
     database="daulatpay",
 )
