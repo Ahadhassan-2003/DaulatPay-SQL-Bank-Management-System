@@ -19,26 +19,26 @@ class _MoreFeaturesState extends State<MoreFeatures> {
             children: [
               Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  ReturnedContainer("Semester Fee"),
-                  ReturnedContainer("Mess Bill"),
+                  ReturnedContainer("Semester Fee","lib/assets/uni.png"),
+                  ReturnedContainer("Mess Bill","lib/assets/nust.png"),
                 ],
               ),
               Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  ReturnedContainer("Sports Complex Fee"),
-                  ReturnedContainer("Saddle Club Fee"),
+                  ReturnedContainer("Sports Complex Fee","lib/assets/gym.png"),
+                  ReturnedContainer("Saddle Club Fee","lib/assets/saddle.png"),
                 ],
               ),
               Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  ReturnedContainer("Hostel Fee"),
-                  ReturnedContainer("Bill Payment"),
+                  ReturnedContainer("Hostel Fee","lib/assets/hostel.png"),
+                  ReturnedContainer("Bill Payment","lib/assets/bill.png"),
                 ],
               ),
               Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  ReturnedContainer("Buy Tickets"),
-                  ReturnedContainer("Mobile Load"),
+                  ReturnedContainer("Buy Tickets","lib/assets/ticket.png"),
+                  ReturnedContainer("Mobile Load","lib/assets/balance.png"),
                 ],
               ),
             ],
@@ -47,7 +47,7 @@ class _MoreFeaturesState extends State<MoreFeatures> {
       ),
     );
   }
-  Widget ReturnedContainer(String label)
+  Widget ReturnedContainer(String label,String image)
   {
     return GestureDetector(
       onTap: ()
@@ -55,15 +55,20 @@ class _MoreFeaturesState extends State<MoreFeatures> {
         Navigator.push(context, MaterialPageRoute(builder: (context)=>Bill_Payments(labelname: label,)));
       },
       child: Container(
-        height: 110,
-        width: 90,
+        height: 140,
+        width: 120,
         decoration: BoxDecoration(
-          color: Colors.grey,
+          color: Color.fromARGB(255,120, 245, 200),
           borderRadius: BorderRadius.circular(10),
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(label,textAlign: TextAlign.center,),
+        child: Column(
+          children: [
+            Container(child: Image.asset(image,height: 50,width: 40,),),
+            Padding(
+              padding: const EdgeInsets.all(6.0),
+              child: Text(label,textAlign: TextAlign.center,),
+            ),
+          ],
         ),
       ),
     );
