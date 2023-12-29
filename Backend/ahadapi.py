@@ -268,6 +268,32 @@ def get_bill_amount():
     }
 
 
+@app.route("/get_old_password",methods=["GET"])
+def get_old_password():
+    account_number = f"{str(request.args['account_no'])}"
+    db.query(f"""SELECT Password FROM user WHERE AccountNumber = {account_number}""")
+    r = db.store_result()
+    rows = r.fetch_row()
+    password = rows[0][0].decode("utf-8")
+    print(password)
+    return{
+        "Password": password
+    }
+
+
+@app.route("/change_password",methods=["GET"])
+def change_password():
+    new_password = f'"{str(request.args["password"])}"'
+    account_number = f"{str(request.args['account_no'])}"
+
+    db.query(f"""UPDATE user SET Password = {new_password} WHERE AccountNumber = {account_number}""")
+    db.store_result()
+
+    return{
+        "success": True
+    }
+
+
 @app.route("/generate_otp", methods=["GET"])
 def generate_otp():
     account_number = f"{str(request.args['account_no'])}"
@@ -312,7 +338,7 @@ def generate_otp():
 db = _mysql.connect(
     host="25.62.4.171",
     port=3306,
-    user="Ahad",
+    user="Ammar",
     password="alexbhatti",
     database="daulatpay",
 )
