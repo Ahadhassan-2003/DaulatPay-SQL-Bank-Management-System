@@ -45,14 +45,15 @@ def login():
                 trows = rt.fetch_row(maxrows=100)
                 column_names = get_column_names(rt)
                 decoded_trows = [dict(zip(column_names, map(lambda x: x.decode("utf-8"), trow))) for trow in trows]                
-                return {"success": True, 
+                return {
+                        "success": True, 
                         "AccountNumber": row[0].decode("utf-8"),
                         "FirstName": row[3].decode("utf-8"),
                         "LastName": row[4].decode("utf-8"),
                         "CashAmount": row[7].decode("utf-8"),
                         "SessionID": row[10].decode("utf-8"),
                         "Transactions": decoded_trows
-                        }
+                    }
             else:
                 return {"success": False}
 
@@ -246,6 +247,56 @@ def generate_statement():
         "transactions": decoded_trows
     }
 
+@app.route("/get_bill_amount", methods=["GET"])
+def get_bill_amount():
+    invoice_number = f"{str(request.args['invoice_number'])}"
+    invoice_number = int(invoice_number)
+    db.query(f"Select Amount from bill where InvoiceNumber = {invoice_number}")
+    result = db.store_result()
+    rows = result.fetch_row()
+    res = rows[0][0].decode("utf-8")
+    print(res)
+    return{
+        "invoice_number": invoice_number,
+        "amount": res
+    }
+
+@app.route("/generate_otp", methods=["GET"])
+def generate_otp():
+    account_number = f"{str(request.args['account_no'])}"
+    account_number = int(account_number)
+    otp = rand.randint(100000, 999999)
+    db.query(f"select Email from user where AccountNumber = {account_number}")
+    r = db.store_result()
+    rows = r.fetch_row()
+    remail = rows[0][0].decode("utf-8")
+    print(remail)
+    def sendmail(remail):
+        smtp_user = 'amaanashraf222999@gmail.com'
+        smtp_password = 'bmkebaddondkkgop'
+        server = 'smtp.gmail.com'
+        port = 587
+
+        msg = MIMEMultipart()
+        msg["Subject"] = 'DAULAT PAY'
+        msg["From"] = smtp_user
+        msg["To"] = remail
+
+        # Add email body
+        msg.attach(MIMEText("Your OTP is: " + str(otp) + ".\nPlease do not share this with anyone else.\nThank you for using Daulat Pay."))
+
+        # Send the email
+        with smtplib.SMTP(server, port) as s:
+            s.ehlo()
+            s.starttls()
+            s.login(smtp_user, smtp_password)
+            s.sendmail(smtp_user, remail, msg.as_string())
+    sendmail(remail)
+    return {
+        "status": "OTP sent successfully",
+        "account_number": account_number,
+        "otp": otp
+    }
 
 db = _mysql.connect(
     host="25.62.4.171",
