@@ -165,9 +165,9 @@ def SignUp():
     phoneno = f'"{str(request.args["Phone"])}"'
     AccountNumber = rand.randint(100000, 999999)
     db.query(f'''INSERT INTO USER 
-    (AccountNumber, Username, Password, FirstName, LastName, Email, Address, CashAmount, DateOfBirth, PhoneNumber, SessionID,CMS)
+    (AccountNumber, Username, Password, FirstName, LastName, Email, Address, CashAmount, DateOfBirth, PhoneNumber, SessionID, CMS, AccountStatus)
     VALUES
-    ({AccountNumber}, {Username}, {password}, {Firstname}, {LastName},{Email},{address},{cash}, {dob}, {phoneno},{session},{CMS})
+    ({AccountNumber}, {Username}, {password}, {Firstname}, {LastName},{Email},{address},{cash}, {dob}, {phoneno},{session},{CMS},"UNBLOCKED")
     ''')
     r = db.store_result()
     db.query(f"create view statement_{AccountNumber} as select * from transaction where SenderAccountNumber = {AccountNumber} or ReceiverAccountNumber = {AccountNumber} order by TransactionDate desc")
@@ -182,26 +182,7 @@ def SignUp():
     }
 
 
-@app.route("/withdrawal", methods=["GET"])
-def withdrawal():
-    account_number = f"{str(request.args['account_no'])}"
-    account_number = int(account_number)
-    amount = f"{str(request.args['amount'])}"
-    amount = int(amount)
-    db.query(f"Select CashAmount from user where AccountNumber = {account_number}")
-    result = db.store_result()
-    rows = result.fetch_row()
-    res = rows[0][0].decode("utf-8")
-    print(res)
-    am = float(res)
-    am -= amount
-    db.query(f"UPDATE user SET CashAmount = {am} WHERE AccountNumber = {account_number}")
-    r = db.store_result()
-    return {
-        "account_number": account_number,
-        "amount": am,
-        "message": "Money withdrawal was successful"
-    }
+
 
 @app.route("/generate_statement", methods=["GET"])
 def generate_statement():
@@ -292,6 +273,8 @@ def change_password():
         "success": True,
         "message": "Password change was successful"
     }
+
+
 @app.route("/bill_payment",methods=["GET"])
 def bill_payment():
     amount = float(request.args['amount'])
