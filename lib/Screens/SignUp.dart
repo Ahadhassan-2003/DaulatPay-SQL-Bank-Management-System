@@ -11,29 +11,29 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
-  var email=new TextEditingController();
-  var password=new TextEditingController();
-  var conpassword=new TextEditingController();
-  var username=new TextEditingController();
-  var firstname=new TextEditingController();
-  var lastname=new TextEditingController();
-  var cms=new TextEditingController();
-  var address=new TextEditingController();
-  var dob=new TextEditingController();
-  var phone=new TextEditingController();
+  var email = new TextEditingController();
+  var password = new TextEditingController();
+  var conpassword = new TextEditingController();
+  var username = new TextEditingController();
+  var firstname = new TextEditingController();
+  var lastname = new TextEditingController();
+  var cms = new TextEditingController();
+  var address = new TextEditingController();
+  var dob = new TextEditingController();
+  var phone = new TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
       body: Container(
-        child:  Padding(
+        child: Padding(
           padding: EdgeInsets.only(),
           child: SingleChildScrollView(
             child: Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(
-                      left: 35.0, right: 35.0, top: 15),
+                  padding:
+                      const EdgeInsets.only(left: 35.0, right: 35.0, top: 15),
                   child: TextFormField(
                     controller: email,
                     decoration: InputDecoration(
@@ -43,8 +43,8 @@ class _SignUpState extends State<SignUp> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(
-                      left: 35.0, right: 35, top: 15),
+                  padding:
+                      const EdgeInsets.only(left: 35.0, right: 35, top: 15),
                   child: TextFormField(
                     controller: password,
                     decoration: InputDecoration(
@@ -54,8 +54,8 @@ class _SignUpState extends State<SignUp> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(
-                      left: 35.0, right: 35, top: 15),
+                  padding:
+                      const EdgeInsets.only(left: 35.0, right: 35, top: 15),
                   child: TextFormField(
                     controller: conpassword,
                     decoration: InputDecoration(
@@ -65,8 +65,8 @@ class _SignUpState extends State<SignUp> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(
-                      left: 35.0, right: 35, top: 15),
+                  padding:
+                      const EdgeInsets.only(left: 35.0, right: 35, top: 15),
                   child: TextFormField(
                     controller: username,
                     decoration: InputDecoration(
@@ -76,8 +76,8 @@ class _SignUpState extends State<SignUp> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(
-                      left: 35.0, right: 35, top: 15),
+                  padding:
+                      const EdgeInsets.only(left: 35.0, right: 35, top: 15),
                   child: TextFormField(
                     controller: firstname,
                     decoration: InputDecoration(
@@ -87,8 +87,8 @@ class _SignUpState extends State<SignUp> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(
-                      left: 35.0, right: 35, top: 15),
+                  padding:
+                      const EdgeInsets.only(left: 35.0, right: 35, top: 15),
                   child: TextFormField(
                     controller: lastname,
                     decoration: InputDecoration(
@@ -98,8 +98,8 @@ class _SignUpState extends State<SignUp> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(
-                      left: 35.0, right: 35, top: 15),
+                  padding:
+                      const EdgeInsets.only(left: 35.0, right: 35, top: 15),
                   child: TextFormField(
                     controller: cms,
                     decoration: InputDecoration(
@@ -109,8 +109,8 @@ class _SignUpState extends State<SignUp> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(
-                      left: 35.0, right: 35, top: 15),
+                  padding:
+                      const EdgeInsets.only(left: 35.0, right: 35, top: 15),
                   child: TextFormField(
                     controller: address,
                     decoration: InputDecoration(
@@ -120,8 +120,8 @@ class _SignUpState extends State<SignUp> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(
-                      left: 35.0, right: 35, top: 15),
+                  padding:
+                      const EdgeInsets.only(left: 35.0, right: 35, top: 15),
                   child: TextFormField(
                     controller: dob,
                     decoration: InputDecoration(
@@ -132,8 +132,8 @@ class _SignUpState extends State<SignUp> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(
-                      left: 35.0, right: 35, top: 15),
+                  padding:
+                      const EdgeInsets.only(left: 35.0, right: 35, top: 15),
                   child: TextFormField(
                     controller: phone,
                     decoration: InputDecoration(
@@ -144,14 +144,21 @@ class _SignUpState extends State<SignUp> {
                 ),
                 Container(
                   child: TextButton(
-                     onPressed: ()
-                     async
-                     {
-                       await userSignup(username.text, password.text, firstname.text, lastname.text, dob.text, phone.text, email.text, cms.text);
-                     },
+                      onPressed: () async {
+                        await userSignup(
+                            username.text,
+                            password.text,
+                            firstname.text,
+                            lastname.text,
+                            dob.text,
+                            phone.text,
+                            email.text,
+                            cms.text);
+                      },
                       child: Text("SignUp")),
                 ),
-                Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Text("Already have an Account"),
                     Container(
@@ -160,11 +167,16 @@ class _SignUpState extends State<SignUp> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: TextButton(
-                          onPressed:(){
-                            Navigator.push(context,MaterialPageRoute(builder: (context)=>Login()));
-            
-                          },child: Text("Login in Now"
-                          ,style: TextStyle(color: Colors.white),)))
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Login()));
+                            },
+                            child: Text(
+                              "Login in Now",
+                              style: TextStyle(color: Colors.white),
+                            )))
                   ],
                 )
               ],
@@ -175,7 +187,15 @@ class _SignUpState extends State<SignUp> {
     );
   }
 
-  Future<void> userSignup(String username, String password,String fname,String lname,String dob,String phoneno,String email,String cms) async {
+  Future<void> userSignup(
+      String username,
+      String password,
+      String fname,
+      String lname,
+      String dob,
+      String phoneno,
+      String email,
+      String cms) async {
     String user = 'amaan';
     String pass = '12345';
 
@@ -188,11 +208,10 @@ class _SignUpState extends State<SignUp> {
       'Content-Type': 'application/json',
     };
     // Encode the username and password in the URL
-    String url=
+    String url =
         "http://10.7.93.55:8000/signup?Username=$username&password=$password&FirstName=$fname&LastName=$lname&Email=$email&CMS=$cms&Address=${address.text}&DOB=$dob&Phone=${phone.text}";
-    var data = await getData(url,headers);
+    var data = await getData(url, headers);
     var decodedObjects = jsonDecode(data);
-    print( decodedObjects["success"]);
+    print(decodedObjects["success"]);
   }
-
 }
