@@ -1,4 +1,6 @@
+import 'package:daulatpay/Navigation.dart';
 import 'package:daulatpay/Screens/Login.dart';
+import 'package:daulatpay/Screens/Transaction.dart';
 import 'package:daulatpay/Screens/dashboard.dart';
 import 'package:flutter/material.dart';
 
@@ -13,6 +15,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
         // This is the theme of your application.
