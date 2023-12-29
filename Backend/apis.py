@@ -64,9 +64,11 @@ def SignUp():
     account_no = rd.randint(100000,999999)
     print(account_no)
     db.query(f'''INSERT INTO USER
-    (AccountNumber, Username, Password, FirstName, LastName, Email, Address, CashAmount, DateOfBirth, PhoneNumber, SessionID,CMS)
+    (AccountNumber, Username, Password, FirstName, LastName, Email, Address, CashAmount, DateOfBirth, PhoneNumber, 
+    SessionID,CMS)
     VALUES
-    ({account_no}, {Username}, {password}, {Firstname}, {LastName},{Email},{address},{cash}, {dob}, {phoneno},{session},{CMS})
+    ({account_no}, {Username}, {password}, {Firstname}, {LastName},{Email},{address},{cash}, {dob}, {phoneno},{session},
+    {CMS})
     ''')
     db.query("create view ")
     return {
