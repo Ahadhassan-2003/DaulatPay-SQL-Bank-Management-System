@@ -61,6 +61,92 @@ def login():
     return result
 
 
+@app.route("/deposit", methods=["GET"])
+def deposit():
+    account_number = f"{str(request.args['account_no'])}"
+    account_number = int(account_number)
+    amount = f"{str(request.args['amount'])}"
+    amount = int(amount)
+    #query to get the amount of the user
+    db.query(f"Select CashAmount from user where AccountNumber = {account_number}")
+    result = db.store_result()
+    rows = result.fetch_row()
+    res = rows[0][0].decode("utf-8")
+    #adding the amount
+    res = float(res)
+    res += amount
+    #query to update the amount in user's account
+    db.query(f"UPDATE user SET CashAmount = {res} WHERE AccountNumber = {account_number}")
+    r = db.store_result()
+
+    #query to insert this transaction in the transaction table
+    transaction_status = "Successful"
+    db.query(f"""INSERT INTO transaction(Amount,TransactionDate, SenderAccountNumber, ReceiverAccountNumber,
+                TransactionType, TransactionDescription, MerchantName, TransactionStatus)
+                VALUES({amount},curdate(),{account_number},{account_number},"withdrawal","Withdrew amount from account",
+                "None",'{transaction_status}')""")
+
+    return {
+        "account_number": account_number,
+        "amount": res,
+        "message": "Money deposit was successful"
+    }
+
+
+@app.route("/money_transfer", methods=["GET"])
+def money_transfer():
+    sender_account = f"{str(request.args['saccount'])}"
+    receiver_account = f"{str(request.args['raccount'])}"
+    amount = f"{str(request.args['amount'])}"
+    amount = int(amount)
+
+    #retrieveing cash of both th sender and the receiver
+    db.query(f"Select CashAmount from user where AccountNumber = {sender_account}")
+    result_sender = db.store_result()
+    row_sender = result_sender.fetch_row()
+    cash_sender = row_sender[0][0].decode("utf-8")
+    cash_sender = float(cash_sender)
+
+    db.query(f"Select CashAmount from user where AccountNumber = {receiver_account}")
+    result_receiver = db.store_result()
+    row_receiver = result_receiver.fetch_row()
+    cash_receiver = row_receiver[0][0].decode("utf-8")
+    cash_receiver = float(cash_receiver)
+
+    if cash_sender < amount:
+        return {
+            "sender_account": sender_account,
+            "receiver_account": receiver_account,
+            "amount": amount,
+            "status": "Failed"
+        }
+
+    #deducting and adding the amount
+    cash_receiver += amount
+    cash_sender -= amount
+
+    #updating the cash in both the sender and the receiver's account
+    db.query(f"UPDATE user SET CashAmount = {cash_receiver} WHERE AccountNumber = {receiver_account}")
+    db.store_result()
+
+    db.query(f"UPDATE user SET CashAmount = {cash_sender} WHERE AccountNumber = {sender_account}")
+    db.store_result()
+
+    #inserting the transaction in the transaction table
+    transaction_type = "Money Transfer"
+    db.query(f'''INSERT INTO transaction (Amount, TransactionDate, SenderAccountNumber, RecieverAccountNumber,
+            TransactionType, TransactionDescription, MerchantName, TransactionStatus)  
+            VALUES({amount},curdate(),{sender_account},{receiver_account},{transaction_type},"Jo user se aaye ga","None",
+            "Successful")''')
+    db.store_result()
+
+    return {
+        "sender_account": sender_account,
+        "receiver_account": receiver_account,
+        "amount_transferred": amount,
+        "status": "Successful"
+    }
+
 @app.route('/signup', methods=['GET'])
 @basic_auth.required
 def SignUp():
@@ -91,99 +177,6 @@ def SignUp():
         "LastName": LastName,
         "CashAmount": cash,
         "SessionID": session,
-    }
-
-
-@app.route("/money_transfer", methods=["GET"])
-def money_transfer():
-    sender_account = f"{str(request.args['saccount'])}"
-    receiver_account = f"{str(request.args['raccount'])}"
-    amount = f"{str(request.args['amount'])}"
-    amount = int(amount)
-    db.query(f"Select CashAmount from user where AccountNumber = {sender_account}")
-    result_sender = db.store_result()
-    row_sender = result_sender.fetch_row()
-    cash_sender = row_sender[0][0].decode("utf-8")
-    cash_sender = float(cash_sender)
-
-    db.query(f"Select CashAmount from user where AccountNumber = {receiver_account}")
-    result_receiver = db.store_result()
-    row_receiver = result_receiver.fetch_row()
-    cash_receiver = row_receiver[0][0].decode("utf-8")
-    cash_receiver = float(cash_receiver)
-
-    if cash_sender < amount:
-        return {
-            "sender_account": sender_account,
-            "receiver_account": receiver_account,
-            "amount": amount,
-            "status": "Failed"
-        }
-
-    cash_receiver += amount
-    cash_sender -= amount
-
-    db.query(f"UPDATE user SET CashAmount = {cash_receiver} WHERE AccountNumber = {receiver_account}")
-    db.store_result()
-
-    db.query(f"UPDATE user SET CashAmount = {cash_sender} WHERE AccountNumber = {sender_account}")
-    db.store_result()
-
-    db.query(f'''INSERT INTO transaction (Amount, TransactionDate, SenderAccountNumber, ReceiverAccountNumber,
-     TransactionType, TransactionDescription, MerchantName, TransactionStatus)
-    VALUES({amount},"2023-12-27",{sender_account},{receiver_account},"Money Transfer","Testing","Nust Swimming Pool",
-    "Successful")''')
-    db.store_result()
-
-    return {
-        "sender_account": sender_account,
-        "receiver_account": receiver_account,
-        "amount_transferred": amount,
-        "status": "Successful"
-    }
-
-
-@app.route("/deposit", methods=["GET"])
-def deposit():
-    account_number = f"{str(request.args['account_no'])}"
-    account_number = int(account_number)
-    amount = f"{str(request.args['amount'])}"
-    amount = int(amount)
-    db.query(f"Select CashAmount from user where AccountNumber = {account_number}")
-    result = db.store_result()
-    rows = result.fetch_row()
-    res = rows[0][0].decode("utf-8")
-    print(res)
-    res = float(res)
-    res += amount
-    db.query(f"UPDATE user SET CashAmount = {res} WHERE AccountNumber = {account_number}")
-    r = db.store_result()
-    return {
-        "account_number": account_number,
-        "amount": res,
-        "message": "Money deposit was successful"
-    }
-
-
-@app.route("/withdrawal", methods=["GET"])
-def withdrawal():
-    account_number = f"{str(request.args['account_no'])}"
-    account_number = int(account_number)
-    amount = f"{str(request.args['amount'])}"
-    amount = int(amount)
-    db.query(f"Select CashAmount from user where AccountNumber = {account_number}")
-    result = db.store_result()
-    rows = result.fetch_row()
-    res = rows[0][0].decode("utf-8")
-    print(res)
-    am = float(res)
-    am -= amount
-    db.query(f"UPDATE user SET CashAmount = {am} WHERE AccountNumber = {account_number}")
-    r = db.store_result()
-    return {
-        "account_number": account_number,
-        "amount": am,
-        "message": "Money withdrawal was successful"
     }
 
 
@@ -261,6 +254,62 @@ def get_bill_amount():
         "invoice_number": invoice_number,
         "amount": res
     }
+@app.route("/change_password",methods=["GET"])
+def change_password():
+    new_password = f'"{str(request.args["password"])}"'
+    account_number = f'"{str(request.args["account_no"])}"'
+
+    db.query(f"""UPDATE user SET Password = {new_password} WHERE AccountNumber = {account_number}""")
+    db.store_result()
+
+    return{
+        "success": True,
+        "message": "Password change was successful"
+    }
+@app.route("/bill_payment",methods=["GET"])
+def bill_payment():
+    amount = float(request.args['amount'])
+    account_number = 2  # Replace with the actual account number
+    bill_type = f'"{str(request.args["billtype"])}"'
+
+    #query to retrieve amount from user's account
+    db.query(f"SELECT CashAmount FROM user WHERE AccountNumber = {account_number}")
+
+    result = db.store_result()
+    rows = result.fetch_row()
+    cash = float(rows[0][0].decode("utf-8"))
+
+    if cash < amount:
+        return {
+            "success": False,
+            "message": "Transaction was unsuccessful"
+        }
+
+    #deducting the cash
+    cash -= amount
+    bill_status = '"Paid"'
+
+    #inserting the bill status into the bill table
+    db.query(f"""UPDATE bill SET BillStatus = {bill_status}, PaymentDate = curdate() WHERE BillType = {bill_type} AND 
+            AccountNumber = {account_number} AND BillStatus = "Unpaid";""")
+    db.store_result()
+
+    #uodating the amount in the user;s account
+    db.query(f"UPDATE user SET CashAmount = {cash} WHERE AccountNumber = {account_number}")
+    db.store_result()
+
+    receiver_account_no = 1
+    merchant_name = "NUST Sports Complex"
+    transaction_status = "Successful"
+
+    #inserting the transaction in the transaction table
+    db.query(f"""INSERT INTO transaction(Amount,TransactionDate, SenderAccountNumber, ReceiverAccountNumber,
+            TransactionType, TransactionDescription, MerchantName, TransactionStatus)
+            VALUES({amount},curdate(),{account_number},{receiver_account_no},"money_transfer","Gym fee is paid",
+            '{merchant_name}','{transaction_status}')""")
+
+    return {"success": True}
+
 
 @app.route("/generate_otp", methods=["GET"])
 def generate_otp():
@@ -284,7 +333,7 @@ def generate_otp():
         msg["To"] = remail
 
         # Add email body
-        msg.attach(MIMEText("Your OTP is: " + str(otp) + ".\nPlease do not share this with anyone else.\nThank you for using Daulat Pay."))
+        msg.attach(MIMEText("Your OTP for Password Change is: " + str(otp) + ".\nPlease do not share this with anyone else.\nThank you for using Daulat Pay."))
 
         # Send the email
         with smtplib.SMTP(server, port) as s:
@@ -300,6 +349,45 @@ def generate_otp():
     }
 
 
+@app.route("/withdrawal", methods=["GET"])
+def withdrawal():
+    account_number = f"{str(request.args['account_no'])}"
+    account_number = int(account_number)
+    amount = f"{str(request.args['amount'])}"
+    amount = int(amount)
+    #query to retrieve amount from the account of the user
+    db.query(f"Select CashAmount from user where AccountNumber = {account_number}")
+    result = db.store_result()
+    rows = result.fetch_row()
+    cash = rows[0][0].decode("utf-8")
+    cash = float(cash)
+
+    if cash < amount:
+        return{
+            "account_number": account_number,
+            "amount": cash,
+            "message": "Insufficient funds"
+        }
+
+    #deducting the amount
+    cash -= amount
+
+    #query to update cash in the use's account;
+    db.query(f"UPDATE user SET CashAmount = {cash} WHERE AccountNumber = {account_number}")
+    r = db.store_result()
+
+    #query to add this transaction in transaction table
+    transaction_status = "Successful"
+    db.query(f"""INSERT INTO transaction(Amount,TransactionDate, SenderAccountNumber, ReceiverAccountNumber,
+            TransactionType, TransactionDescription, MerchantName, TransactionStatus)
+            VALUES({amount},curdate(),{account_number},{account_number},"withdrawal","Withdrew amount from account",
+            "None",'{transaction_status}')""")
+
+    return {
+        "account_number": account_number,
+        "amount": cash,
+        "message": "Money withdrawal was successful"
+    }
 
 
 db = _mysql.connect(
