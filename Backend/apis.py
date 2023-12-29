@@ -1,11 +1,8 @@
 from MySQLdb import _mysql
-from MySQLdb import *
 from flask import Flask, request
-import requests
 from flask_basicauth import BasicAuth
 from flask_cors import CORS
 import random as rd
-import datetime
 
 app = Flask(__name__)
 CORS(app)
@@ -58,8 +55,8 @@ def SignUp():
     Email = f'"{str(request.args["Email"])}"'
     CMS = f'"{str(request.args["CMS"])}"'
     address = f'"{str(request.args["Address"])}"'
-    cash=0
-    session=f'"123"'
+    cash = 0
+    session = f'"123"'
     cash = 0
     session = f'"123"'
     dob = f'"{str(request.args["DOB"])}"'
@@ -117,10 +114,11 @@ def money_transfer():
     db.query(f"UPDATE user SET CashAmount = {cash_sender} WHERE AccountNumber = {sender_account}")
     db.store_result()
 
+    transaction_type = "Money Transfer"
     db.query(f'''INSERT INTO transaction (Amount, TransactionDate, SenderAccountNumber, RecieverAccountNumber,
-     TransactionType, TransactionDescription, MerchantName, TransactionStatus)
-    VALUES({amount},"2023-12-27",{sender_account},{receiver_account},"Money Transfer","Testing","Nust Swimming Pool",
-    "Successful")''')
+            TransactionType, TransactionDescription, MerchantName, TransactionStatus)  
+            VALUES({amount},curdate(),{sender_account},{receiver_account},{transaction_type},"Jo user se aaye ga","None",
+            "Successful")''')
     db.store_result()
 
     return {
@@ -146,6 +144,13 @@ def deposit():
     res += amount
     db.query(f"UPDATE user SET CashAmount = {res} WHERE AccountNumber = {account_number}")
     r = db.store_result()
+
+    transaction_status = "Successful"
+    db.query(f"""INSERT INTO transaction(Amount,TransactionDate, SenderAccountNumber, ReceiverAccountNumber,
+                TransactionType, TransactionDescription, MerchantName, TransactionStatus)
+                VALUES(){amount},curdate(),{account_number},{account_number},"withdrawal","Withdrew amount from account",
+                "None",{transaction_status}""")
+
     return {
         "account_number": account_number,
         "amount": res,
@@ -175,6 +180,13 @@ def withdrawal():
     cash -= amount
     db.query(f"UPDATE user SET CashAmount = {cash} WHERE AccountNumber = {account_number}")
     r = db.store_result()
+
+    transaction_status = "Successful"
+    db.query(f"""INSERT INTO transaction(Amount,TransactionDate, SenderAccountNumber, ReceiverAccountNumber,
+            TransactionType, TransactionDescription, MerchantName, TransactionStatus)
+            VALUES(){amount},curdate(),{account_number},{account_number},"withdrawal","Withdrew amount from account",
+            "None",{transaction_status}""")
+
     return {
         "account_number": account_number,
         "amount": cash,
@@ -187,6 +199,7 @@ def bill_payment():
     amount = float(request.args['amount'])
     account_number = 2  # Replace with the actual account number
     bill_type = f'"{str(request.args["billtype"])}"'
+
     bill_status = '''"Unpaid"'''
 
     db.query(f"SELECT CashAmount FROM user WHERE AccountNumber = {account_number}")
@@ -203,13 +216,26 @@ def bill_payment():
 
     cash -= amount
     bill_status = '''"Paid"'''
-    # Use parameterized query to prevent SQL injection
     db.query(f"""INSERT INTO bill (Amount, AccountNumber, BillType, BillStatus, PaymentDate)
                 VALUES ({amount},{account_number},{bill_type},{bill_status},curdate());""")
     db.store_result()
 
     db.query(f"UPDATE user SET CashAmount = {cash} WHERE AccountNumber = {account_number}")
     db.store_result()
+
+    receiver_account_no = 122223344
+    merchant_name = "NUST Sports Complex"
+    transaction_status = "Successful"
+
+    # print(f"""INSERT INTO transaction(Amount,TransactionDate, SenderAccountNumber, ReceiverAccountNumber,
+    #         TransactionType, TransactionDescription, MerchantName, TransactionStatus)
+    #         VALUES(){amount},curdate(),{account_number},{receiver_account_no},"money_transfer","Gym fee is paid",
+    #         {merchant_name},{transaction_status}""")
+
+    db.query(f"""INSERT INTO transaction(Amount,TransactionDate, SenderAccountNumber, ReceiverAccountNumber,
+            TransactionType, TransactionDescription, MerchantName, TransactionStatus)
+            VALUES(){amount},curdate(),{account_number},{receiver_account_no},"money_transfer","Gym fee is paid",
+            {merchant_name},{transaction_status}""")
 
     return {"success": True}
 
