@@ -1,3 +1,4 @@
+
 import 'dart:convert';
 import 'package:daulatpay/Constants.dart';
 import 'package:daulatpay/Navigation.dart';
@@ -6,8 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 
+
 class Login extends StatefulWidget {
-  const Login({Key? key}) : super(key: key);
+  const Login({super.key});
 
   @override
   State<Login> createState() => _LoginState();
@@ -35,7 +37,6 @@ class _LoginState extends State<Login> {
   void initState() {
     super.initState();
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -110,12 +111,6 @@ class _LoginState extends State<Login> {
                       child: TextButton(onPressed:(){
                         Navigator.push(context,MaterialPageRoute(builder: (context)=>SignUp()));
 
-                      },child: Text("Sign Up Now"
-                      ,style: TextStyle(color: Colors.white),)))
-                ],
-              )
-            ],
-          ),
         ),
       ),
     );
