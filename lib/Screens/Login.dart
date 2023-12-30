@@ -1,9 +1,11 @@
 
 import 'dart:convert';
+import 'package:daulatpay/Constants.dart';
 import 'package:daulatpay/Navigation.dart';
 import 'package:daulatpay/Screens/SignUp.dart';
-import 'package:daulatpay/Screens/dashboard.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
 
 
 class Login extends StatefulWidget {
@@ -24,6 +26,7 @@ Future<String> getData(String url,Map<String,String> header) async {
 }
 
 class _LoginState extends State<Login> {
+  Constants obj=new Constants();
   var email=new TextEditingController();
   var password=new TextEditingController();
   var name;
@@ -66,21 +69,36 @@ class _LoginState extends State<Login> {
                   ),
                 ),
               ),
-              Container(
-                child: TextButton(
-                    onPressed: () async{
-                      bool success=await userLogin(email.text, password.text);
-                      if(success)
-                      {
-                        Navigator.push(context,MaterialPageRoute(builder: (context)=>Navigation(
-                          name: name,
-                          AccountNo: accountno,
-                          cash: currentamount,
-                          transactions: transactions,
-                        )));
-                      }
-                    },
-                    child: Text("Login")),
+              Padding(
+                padding: const EdgeInsets.only(top:10.0,bottom: 10.0,right: 35,left:35),
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(
+                    color: Colors.green,
+                    borderRadius: BorderRadius.circular(10)
+                  ),
+                  child: TextButton(
+                      onPressed: () async{
+                        bool success=await userLogin(email.text, password.text);
+                        if(success)
+                        {
+                          Navigator.push(context,MaterialPageRoute(builder: (context)=>Navigation(
+                            name: name,
+                            AccountNo: accountno,
+                            cash: currentamount,
+                            transactions: transactions,
+                          )));
+                        }
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.only(top:10.0,bottom: 10,right: 35,left: 35),
+                        child: Text("Login",
+                        style: GoogleFonts.actor(
+                          color: Colors.white
+                        ),
+                        ),
+                      )),
+                ),
               ),
               Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -112,7 +130,7 @@ class _LoginState extends State<Login> {
     };
 
     // Encode the username and password in the URL
-    String url="http://10.7.94.25:8000/login?Username=$username&Password=$password";  print("3");
+    String url="${obj.ipaddress}/login?Username=$username&Password=$password";  print("3");
     var data = await getData(url,headers);
     print("4");
     var decodedObjects = jsonDecode(data);
