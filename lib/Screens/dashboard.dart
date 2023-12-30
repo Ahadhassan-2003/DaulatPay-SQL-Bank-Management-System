@@ -53,7 +53,7 @@ class _DashboardState extends State<Dashboard> {
                             alignment: Alignment.topLeft,
                             child: Padding(
                               padding: const EdgeInsets.all(12.0),
-                              child: Text('${widget.name}',style: GoogleFonts.actor(
+                              child: Text('${widget.name}',style: GoogleFonts.dosis(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 25
                               ),),
@@ -68,7 +68,7 @@ class _DashboardState extends State<Dashboard> {
                                 padding: const EdgeInsets.all(10.0),
                                 child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text('${widget.cash}',style: TextStyle(fontSize: 30),),
+                                    Text('${widget.cash}',style: GoogleFonts.mukta(fontSize: 30),),
                                     Icon(Icons.arrow_forward_outlined),
                                   ],
                                 ),
@@ -166,13 +166,14 @@ class _DashboardState extends State<Dashboard> {
                             borderRadius: BorderRadius.circular(10)
                           ),
                           child: ListTile(
+                            leading: Container(child: (widget.AccountNo==widget.transactions?[index]["ReceiverAccountNumber"])?Image.asset("lib/assets/down-arrow.png",width: 40,height: 40,color: Colors.green,):Image.asset("lib/assets/upward-arrow.png",width: 40,height: 40,color: Colors.red,),),
                             title: Column(
                               children: [
                                 Row(
                                   children:
                                   [
-                                    Text("To: "),
-                                    Text(widget.transactions?[index]["RecieverAccountNumber"]),
+                                    (widget.AccountNo==widget.transactions?[index]["ReceiverAccountNumber"])?Text("From: "):Text("To: "),
+                                    (widget.AccountNo==widget.transactions?[index]["ReceiverAccountNumber"])?Text(widget.transactions?[index]["SenderAccountNumber"]):Text(widget.transactions?[index]["ReceiverAccountNumber"]),
                                   ],
                                 ),
                                 Row(

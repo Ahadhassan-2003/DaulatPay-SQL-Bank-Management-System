@@ -35,7 +35,7 @@ class _NavigationState extends State<Navigation> {
     screens = [
       CallDashboard(),
       MoreFeatures(),
-      Profile(name:widget.name),
+      Profile(name:widget.name,AccountNo: widget.AccountNo,),
     ];
   }
 

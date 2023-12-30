@@ -1,9 +1,16 @@
+import 'dart:convert';
+
+import 'package:daulatpay/Constants.dart';
+import 'package:daulatpay/Screens/Login.dart';
+import 'package:daulatpay/Screens/changepassword.dart';
 import 'package:flutter/material.dart';
 class Profile extends StatefulWidget {
   Profile({super.key,
   required this.name,
+  required this.AccountNo,
   });
   String name;
+  String AccountNo;
   @override
   State<Profile> createState() => _ProfileState();
 }
@@ -34,7 +41,7 @@ class _ProfileState extends State<Profile> {
               child: GestureDetector(
                 onTap: ()
                 {
-                  Navigator.push(context,MaterialPageRoute(builder: (context)=>GetAccountStatement()));
+                  Navigator.push(context,MaterialPageRoute(builder: (context)=>GetAccountStatement( AccountNo: widget.AccountNo,)));
                 },
                 child: Container(
                   width: MediaQuery.of(context).size.width,
@@ -51,15 +58,21 @@ class _ProfileState extends State<Profile> {
             ),
             Padding(
               padding: const EdgeInsets.only(left:30,right: 30,top: 10),
-              child: Container(
-                width: MediaQuery.of(context).size.width,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.grey
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Text("Change MPIN"),
+              child: GestureDetector(
+                onTap: ()
+                {
+                  Navigator.push(context,MaterialPageRoute(builder: (context)=>ChangePassword(AccountNo: widget.AccountNo,)));
+                },
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.grey
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Text("Change MPIN"),
+                  ),
                 ),
               ),
             ),
@@ -81,7 +94,7 @@ class _ProfileState extends State<Profile> {
               child: GestureDetector(
                 onTap: ()
                 {
-                  Navigator.push(context,MaterialPageRoute(builder: (context)=>PrivacyPolicy()));
+                  Navigator.push(context,MaterialPageRoute(builder: (context)=>PrivacyPolicy(AccountNo: widget.AccountNo,)));
                 },
                 child: Container(
                   width: MediaQuery.of(context).size.width,
@@ -115,13 +128,15 @@ class _ProfileState extends State<Profile> {
   }
 }
 class GetAccountStatement extends StatefulWidget {
-  const GetAccountStatement({super.key});
-
+   GetAccountStatement({super.key,
+    required this.AccountNo});
+  String AccountNo;
   @override
   State<GetAccountStatement> createState() => _GetAccountStatementState();
 }
 
 class _GetAccountStatementState extends State<GetAccountStatement> {
+  Constants obj=new Constants();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -142,7 +157,7 @@ class _GetAccountStatementState extends State<GetAccountStatement> {
                 ),
                 child: TextButton(
                   child: Text("Request",style: TextStyle(color: Colors.white),),
-                  onPressed: (){},
+                  onPressed: (){RequestAccountStatement();},
                 ),
               ),
             )
@@ -151,13 +166,37 @@ class _GetAccountStatementState extends State<GetAccountStatement> {
       ),
     );
   }
+
+  Future<void> RequestAccountStatement() async {
+    String user = 'amaan';
+    String pass = '12345';
+
+    // Combine the username and password into a single string
+    String credentials = base64.encode(utf8.encode('$user:$pass'));
+
+    // Set up the request headers with Basic Authentication
+    Map<String, String> headers = {
+      'Authorization': 'Basic $credentials',
+      'Content-Type': 'application/json',
+    };
+    // Encode the username and password in the URL
+    String url=
+        "${obj.ipaddress}/generate_statement?AccountNumber=${widget.AccountNo}";
+    var data = await getData(url,headers);
+    var decodedObjects = jsonDecode(data);
+    print( decodedObjects["success"]);
+  }
+
 }
 class PrivacyPolicy extends StatefulWidget {
+  PrivacyPolicy({required this.AccountNo});
+  String AccountNo;
   @override
   _PrivacyPolicyState createState() => _PrivacyPolicyState();
 }
 
 class _PrivacyPolicyState extends State<PrivacyPolicy> {
+  Constants obj=new Constants();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -322,4 +361,5 @@ class _PrivacyPolicyState extends State<PrivacyPolicy> {
       ),
     );
   }
+
 }
