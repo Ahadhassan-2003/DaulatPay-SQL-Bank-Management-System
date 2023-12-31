@@ -53,7 +53,8 @@ def login():
                     "LastName": row[4].decode("utf-8"),
                     "CashAmount": row[7].decode("utf-8"),
                     "SessionID": row[10].decode("utf-8"),
-                    "Transactions": decoded_trows
+                    "Transactions": decoded_trows,
+                    "AccountStatus": row[12].decode("utf-8")
                 }
             else:
                 return {"success": False}
@@ -403,11 +404,35 @@ def withdrawal():
         "message": "Money withdrawal was successful"
     }
 
+@app.route("/updated_details", methods=["GET"])
+def updated_details():
+    account_number = str(request.args['AccountNumber'])
+    account_number = int(account_number)
+    db.query(f"SELECT * FROM user WHERE AccountNumber = {account_number}")
+    r = db.store_result()
+    rows = r.fetch_row()
+    row = rows[0]
+    db.query(f"""Select * from transaction where SenderAccountNumber = {account_number} or 
+               ReceiverAccountNumber = {account_number} order by TransactionDate desc""")
+    rt = db.store_result()
+    trows = rt.fetch_row(maxrows=100)
+    column_names = get_column_names(rt)
+    decoded_trows = [dict(zip(column_names, map(lambda x: x.decode("utf-8"), trow))) for trow in trows]
+    return {
+        "success": True,
+        "AccountNumber": row[0].decode("utf-8"),
+        "FirstName": row[3].decode("utf-8"),
+        "LastName": row[4].decode("utf-8"),
+        "CashAmount": row[7].decode("utf-8"),
+        "SessionID": row[10].decode("utf-8"),
+        "Transactions": decoded_trows,
+        "AccountStatus": row[12].decode("utf-8")
+    }
 
 db = _mysql.connect(
     host="25.62.4.171",
     port=3306,
-    user="Ammar",
+    user="Ahad",
     password="alexbhatti",
     database="daulatpay",
 )
