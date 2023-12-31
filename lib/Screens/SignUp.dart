@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cherry_toast/cherry_toast.dart';
 import 'package:daulatpay/Screens/Login.dart';
 import 'package:flutter/material.dart';
 
@@ -209,9 +210,17 @@ class _SignUpState extends State<SignUp> {
     };
     // Encode the username and password in the URL
     String url =
-        "http://10.7.93.55:8000/signup?Username=$username&password=$password&FirstName=$fname&LastName=$lname&Email=$email&CMS=$cms&Address=${address.text}&DOB=$dob&Phone=${phone.text}";
+        "http://10.7.93.97:8000/signup?Username=$username&Password=$password&FirstName=$fname&LastName=$lname&Email=$email&CMS=$cms&Address=${address.text}&DOB=$dob&Phone=${phone.text}";
     var data = await getData(url, headers);
     var decodedObjects = jsonDecode(data);
-    print(decodedObjects["success"]);
+    if(decodedObjects["success"])
+      {
+        CherryToast.success(title: Text("Account Successfully created\nPlease Login Again")).show(context);
+        Navigator.push(context,MaterialPageRoute(builder: (context)=>Login()));
+      }
+    else
+    {
+      CherryToast.success(title: Text("Account Not Created.\nTry Again Later")).show(context);
+    }
   }
 }

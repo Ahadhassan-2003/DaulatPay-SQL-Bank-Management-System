@@ -34,7 +34,7 @@ class _NavigationState extends State<Navigation> {
     // Initialize the screens list in the constructor body
     screens = [
       CallDashboard(),
-      MoreFeatures(),
+      MoreFeatures(AccountNo: widget.AccountNo,),
       Profile(name:widget.name,AccountNo: widget.AccountNo,),
     ];
   }

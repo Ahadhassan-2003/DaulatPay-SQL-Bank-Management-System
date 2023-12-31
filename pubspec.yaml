@@ -37,7 +37,10 @@ dependencies:
   cupertino_icons: ^1.0.2
   google_fonts: ^6.1.0
   custom_navigation_bar: ^0.8.2
-
+  loading_animation_widget: ^1.2.0+4
+  flutter_emoji: ^2.5.1
+  cherry_toast: ^1.6.4
+  dropdown_button2: ^2.3.8
 dev_dependencies:
   flutter_test:
     sdk: flutter

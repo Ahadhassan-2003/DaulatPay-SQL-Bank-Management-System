@@ -1,7 +1,10 @@
 import 'package:daulatpay/Screens/Bill%20Payments.dart';
+import 'package:daulatpay/Screens/BuyTickets.dart';
 import 'package:flutter/material.dart';
 class MoreFeatures extends StatefulWidget {
-  const MoreFeatures({super.key});
+  MoreFeatures({super.key,
+  required this.AccountNo});
+  String AccountNo;
 
   @override
   State<MoreFeatures> createState() => _MoreFeaturesState();
@@ -32,17 +35,11 @@ class _MoreFeaturesState extends State<MoreFeatures> {
               Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   ReturnedContainer("Hostel Fee","lib/assets/hostel.png"),
-                  ReturnedContainer("Bill Payment","lib/assets/bill.png"),
-                ],
-              ),
-              Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
                   ReturnedContainer("Buy Tickets","lib/assets/ticket.png"),
-                  ReturnedContainer("Mobile Load","lib/assets/balance.png"),
                 ],
               ),
-            ],
-          ),
+
+            ]          ),
         ),
       ),
     );
@@ -50,10 +47,15 @@ class _MoreFeaturesState extends State<MoreFeatures> {
   Widget ReturnedContainer(String label,String image)
   {
     return GestureDetector(
-      onTap: ()
+      onTap: () {
+        if (label != "Buy Tickets")
       {
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>Bill_Payments(labelname: label,)));
-      },
+        Navigator.push(context, MaterialPageRoute(builder: (context)=>Bill_Payments(labelname: label,Accountno:widget.AccountNo,image: image,)));
+      } else
+          {
+            Navigator.push(context, MaterialPageRoute(builder: (context)=>BuyTickets(AccountNo: widget.AccountNo,)));
+          }
+       },
       child: Container(
         height: 140,
         width: 120,
