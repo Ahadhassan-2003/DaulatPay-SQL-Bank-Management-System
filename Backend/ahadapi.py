@@ -150,6 +150,7 @@ def money_transfer():
         "status": "Successful"
     }
 
+
 @app.route('/signup', methods=['GET'])
 @basic_auth.required
 def SignUp():
@@ -181,8 +182,6 @@ def SignUp():
         "CashAmount": cash,
         "SessionID": session,
     }
-
-
 
 
 @app.route("/generate_statement", methods=["GET"])
@@ -262,18 +261,6 @@ def get_bill_amount():
         "invoice_number": invoice_number,
         "amount": res
     }
-@app.route("/change_password",methods=["GET"])
-def change_password():
-    new_password = f'"{str(request.args["password"])}"'
-    account_number = f'"{str(request.args["account_no"])}"'
-
-    db.query(f"""UPDATE user SET Password = {new_password} WHERE AccountNumber = {account_number}""")
-    db.store_result()
-
-    return{
-        "success": True,
-        "message": "Password change was successful"
-    }
 
 
 @app.route("/bill_payment",methods=["GET"])
@@ -320,6 +307,31 @@ def bill_payment():
 
     return {"success": True}
 
+
+@app.route("/get_old_password",methods=["GET"])
+def get_old_password():
+    account_number = f"{str(request.args['account_no'])}"
+    db.query(f"""SELECT Password FROM user WHERE AccountNumber = {account_number}""")
+    r = db.store_result()
+    rows = r.fetch_row()
+    password = rows[0][0].decode("utf-8")
+    print(password)
+    return{
+        "Password": password
+    }
+
+
+@app.route("/change_password",methods=["GET"])
+def change_password():
+    new_password = f'"{str(request.args["password"])}"'
+    account_number = f"{str(request.args['account_no'])}"
+
+    db.query(f"""UPDATE user SET Password = {new_password} WHERE AccountNumber = {account_number}""")
+    db.store_result()
+
+    return{
+        "success": True
+    }
 
 
 @app.route("/generate_otp", methods=["GET"])
