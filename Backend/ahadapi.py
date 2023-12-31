@@ -44,6 +44,7 @@ def login():
             # Use the below query when all changes are made to the database
             db.query(f"""Select * from transaction where SenderAccountNumber = {row[0].decode('utf-8')} or 
                          ReceiverAccountNumber = {row[0].decode('utf-8')} order by TransactionDate desc""")
+
             rt = db.store_result()
             trows = rt.fetch_row(maxrows=100)
             column_names = get_column_names(rt)
@@ -55,9 +56,9 @@ def login():
                 "LastName": row[4].decode("utf-8"),
                 "CashAmount": row[7].decode("utf-8"),
                 "SessionID": row[10].decode("utf-8"),
-                "Transactions": decoded_trows
-            }
-
+                "Transactions": decoded_trows,
+                "AccountStatus": row[12].decode("utf-8")
+                }
         else:
             return {"success": False}
 
@@ -268,26 +269,29 @@ def generate_statement():
 
 @app.route("/get_bill_amount", methods=["GET"])
 def get_bill_amount():
-    invoice_number = f"{str(request.args['invoice_number'])}"
-    invoice_number = int(invoice_number)
-    db.query(f"Select Amount from bill where InvoiceNumber = {invoice_number}")
+    bill_id = f"{str(request.args['bill_id'])}"
+    bill_id = int(bill_id)
+    db.query(f"Select Amount from bill where InvoiceNumber = {bill_id}")
     result = db.store_result()
     rows = result.fetch_row()
     res = rows[0][0].decode("utf-8")
     print(res)
     return {
-        "invoice_number": invoice_number,
+        "bill_id": bill_id,
         "amount": res
     }
 
 
 @app.route("/bill_payment", methods=["GET"])
 def bill_payment():
-    amount = float(request.args['amount'])
-    account_number = 2  # Replace with the actual account number
-    bill_type = f'"{str(request.args["billtype"])}"'
+    account_number = int(str(request.args['account_no']))
+    bill_id = f'"{str(request.args["bill_id"])}"'
 
-    # query to retrieve amount from user's account
+    db.query(f"Select Amount from bill where BillID = {bill_id}")
+    result = db.store_result()
+    rows = result.fetch_row()
+    amount = float(rows[0][0].decode("utf-8"))
+    #query to retrieve amount from user's account
     db.query(f"SELECT CashAmount FROM user WHERE AccountNumber = {account_number}")
 
     result = db.store_result()
@@ -304,9 +308,8 @@ def bill_payment():
     cash -= amount
     bill_status = '"Paid"'
 
-    # inserting the bill status into the bill table
-    db.query(f"""UPDATE bill SET BillStatus = {bill_status}, PaymentDate = curdate() WHERE BillType = {bill_type} AND 
-            AccountNumber = {account_number} AND BillStatus = "Unpaid";""")
+    #inserting the bill status into the bill table
+    db.query(f"""UPDATE bill SET BillStatus = {bill_status}, PaymentDate = curdate() WHERE BillID = {bill_id}""")
     db.store_result()
 
     # uodating the amount in the user;s account
@@ -320,7 +323,7 @@ def bill_payment():
     # inserting the transaction in the transaction table
     db.query(f"""INSERT INTO transaction(Amount,TransactionDate, SenderAccountNumber, ReceiverAccountNumber,
             TransactionType, TransactionDescription, MerchantName, TransactionStatus)
-            VALUES({amount},curdate(),{account_number},{receiver_account_no},"money_transfer","Gym fee is paid",
+            VALUES({amount},curdate(),{account_number},NULL,"money_transfer","Gym fee is paid",
             '{merchant_name}','{transaction_status}')""")
 
     return {"success": True}
@@ -435,11 +438,105 @@ def withdrawal():
         "message": "Money withdrawal was successful"
     }
 
+@app.route("/ticket_info", methods=["GET"])
+def ticket_info():
+    db.query(f"SELECT * FROM ticket")
+    r = db.store_result()
+    rows = r.fetch_row(maxrows=100)
+    column_names = get_column_names(r)
+    decoded_rows = [dict(zip(column_names, map(lambda x: x.decode("utf-8"), row))) for row in rows]
+    return {
+        "tickets": decoded_rows
+    }
+
+@app.route("/buy_tickets", methods=["GET"])
+def buy_tickets():
+    account_number = f"{str(request.args['account_no'])}"
+    account_number = int(account_number)
+    ticket_id = f"{str(request.args['ticket_id'])}"
+    ticket_id = int(ticket_id)
+    tickets_bought = f"{str(request.args['tickets_bought'])}"
+    tickets_bought = int(tickets_bought)
+    ticket_price = f"{str(request.args['ticket_price'])}"
+    ticket_price = float(ticket_price)
+    amount = tickets_bought * ticket_price
+
+    #query to retrieve amount from the account of the user
+    db.query(f"Select CashAmount from user where AccountNumber = {account_number}")
+    result = db.store_result()
+    rows = result.fetch_row()
+    cash = rows[0][0].decode("utf-8")
+    cash = float(cash)
+
+    if cash < amount:
+        return{
+            "account_number": account_number,
+            "amount": cash,
+            "message": "Insufficient funds"
+        }
+
+    #deducting the amount
+    cash -= amount
+
+    #query to update cash in the use's account;
+    db.query(f"UPDATE user SET CashAmount = {cash} WHERE AccountNumber = {account_number}")
+    r = db.store_result()
+
+    #query to add this transaction in transaction table
+    transaction_status = "Successful"
+    db.query(f"""INSERT INTO transaction(Amount,TransactionDate, SenderAccountNumber, ReceiverAccountNumber,
+            TransactionType, TransactionDescription, MerchantName, TransactionStatus)
+            VALUES({amount},curdate(),{account_number},{account_number},"Tickets Bought","{tickets_bought} tickets bought",
+            "None",'{transaction_status}')""")
+    db.store_result()
+
+    db.query(f"update ticket set TicketCount = TicketCount - {tickets_bought} where TicketID = {ticket_id}")
+    db.store_result()
+    db.query(f"update ticket set AmountCollected = AmountCollected + {amount} where TicketID = {ticket_id}")
+    db.store_result()
+    #query to update the ticket table
+    db.query(f"select * from tickets_bought where AccountNumber = {account_number} and TicketID = {ticket_id}")
+    r = db.store_result()
+    rows = r.fetch_row()
+    if len(rows) == 0:
+        db.query(f"Insert into tickets_bought values({account_number},{ticket_id},{tickets_bought})")
+    else:
+        db.query(f"Update tickets_bought set TicketCount = TicketCount + {tickets_bought} where AccountNumber = {account_number} and TicketID = {ticket_id}")
+    return {
+        "account_number": account_number,
+        "amount": cash,
+        "message": "Tickets bought successfully"
+    }
+
+@app.route("/updated_details", methods=["GET"])
+def updated_details():
+    account_number = str(request.args['AccountNumber'])
+    account_number = int(account_number)
+    db.query(f"SELECT * FROM user WHERE AccountNumber = {account_number}")
+    r = db.store_result()
+    rows = r.fetch_row()
+    row = rows[0]
+    db.query(f"""Select * from transaction where SenderAccountNumber = {account_number} or 
+               ReceiverAccountNumber = {account_number} order by TransactionDate desc""")
+    rt = db.store_result()
+    trows = rt.fetch_row(maxrows=100)
+    column_names = get_column_names(rt)
+    decoded_trows = [dict(zip(column_names, map(lambda x: x.decode("utf-8"), trow))) for trow in trows]
+    return {
+        "success": True,
+        "AccountNumber": row[0].decode("utf-8"),
+        "FirstName": row[3].decode("utf-8"),
+        "LastName": row[4].decode("utf-8"),
+        "CashAmount": row[7].decode("utf-8"),
+        "SessionID": row[10].decode("utf-8"),
+        "Transactions": decoded_trows,
+        "AccountStatus": row[12].decode("utf-8")
+    }
 
 db = _mysql.connect(
     host="25.62.4.171",
     port=3306,
-    user="Ammar",
+    user="Ahad",
     password="alexbhatti",
     database="daulatpay",
 )
