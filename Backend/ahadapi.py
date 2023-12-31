@@ -129,6 +129,7 @@ def money_transfer():
     db.query(f"Select CashAmount from user where AccountNumber = {receiver_account}")
     result_receiver = db.store_result()
     row_receiver = result_receiver.fetch_row()
+    print(row_receiver)
     cash_receiver = row_receiver[0][0].decode("utf-8")
     cash_receiver = float(cash_receiver)
 
@@ -137,7 +138,7 @@ def money_transfer():
             "sender_account": sender_account,
             "receiver_account": receiver_account,
             "amount": amount,
-            "status": "Failed"
+            "success": False
         }
 
     # deducting and adding the amount
@@ -153,20 +154,43 @@ def money_transfer():
 
     # inserting the transaction in the transaction table
     transaction_type = "Money Transfer"
-    db.query(f'''INSERT INTO transaction (Amount, TransactionDate, SenderAccountNumber, RecieverAccountNumber,
+    print(transaction_type)
+    db.query(f'''INSERT INTO transaction (Amount, TransactionDate, SenderAccountNumber, ReceiverAccountNumber,
             TransactionType, TransactionDescription, MerchantName, TransactionStatus)  
-            VALUES({amount},curdate(),{sender_account},{receiver_account},{transaction_type},"Jo user se aaye ga","None",
+            VALUES({amount},curdate(),{sender_account},{receiver_account},'{transaction_type}',"None","None",
             "Successful")''')
+    print("input done")
     db.store_result()
 
     return {
         "sender_account": sender_account,
         "receiver_account": receiver_account,
         "amount_transferred": amount,
-        "status": "Successful"
+        "success": True
     }
-
-
+@app.route("/updated_details", methods=["GET"])
+def updated_details():
+    account_number = str(request.args['AccountNumber'])
+    account_number = int(account_number)
+    db.query(f"SELECT * FROM user WHERE AccountNumber = {account_number}")
+    r = db.store_result()
+    rows = r.fetch_row()
+    row = rows[0]
+    db.query(f"""Select * from transaction where SenderAccountNumber = {account_number} or 
+               ReceiverAccountNumber = {account_number} order by TransactionDate desc""")
+    rt = db.store_result()
+    trows = rt.fetch_row(maxrows=100)
+    column_names = get_column_names(rt)
+    decoded_trows = [dict(zip(column_names, map(lambda x: x.decode("utf-8"), trow))) for trow in trows]
+    return {
+        "success": True,
+        "AccountNumber": row[0].decode("utf-8"),
+        "FirstName": row[3].decode("utf-8"),
+        "LastName": row[4].decode("utf-8"),
+        "CashAmount": row[7].decode("utf-8"),
+        "SessionID": row[10].decode("utf-8"),
+        "Transactions": decoded_trows,
+    }
 @app.route('/signup', methods=['GET'])
 @basic_auth.required
 def SignUp():
@@ -340,6 +364,7 @@ def get_old_password():
     return {
         "Password": password
     }
+
 
 
 @app.route("/change_password", methods=["GET"])
@@ -534,8 +559,9 @@ def updated_details():
     }
 
 db = _mysql.connect(
-    host="25.62.4.171",
+    host="localhost",
     port=3306,
+
     user="Ahad",
     password="alexbhatti",
     database="daulatpay",

@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:daulatpay/Constants.dart';
 import 'package:daulatpay/Screens/Login.dart';
 import 'package:daulatpay/Screens/changepassword.dart';
@@ -29,49 +29,123 @@ class _ProfileState extends State<Profile> {
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: Colors.grey
-                ),
+                    color: Color.fromARGB(255, 120, 245, 200)),
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text("${widget.name}",textAlign: TextAlign.center,style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
+                  child: Row(mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 10,right: 10,top: 8,bottom: 8),
+                        child: Image.asset("lib/assets/user.png",height: 50,width: 50,),
+                      ),
+                      Text("${widget.name}",textAlign: TextAlign.center,style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
+                    ],
+                  ),
                 ),),
             ),
             Padding(
-              padding: const EdgeInsets.only(left:30,right: 30,top: 10),
-              child: GestureDetector(
-                onTap: ()
-                {
-                  Navigator.push(context,MaterialPageRoute(builder: (context)=>GetAccountStatement( AccountNo: widget.AccountNo,)));
-                },
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  decoration: BoxDecoration(
-                    color: Colors.grey,
-                    borderRadius: BorderRadius.circular(10)
-                  ),
-                  child:Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Text("Account Statement"),
+              padding: const EdgeInsets.all(20.0),
+              child: Container(
+                decoration: BoxDecoration(
+                    color: Color.fromARGB(255, 120, 245, 200),
+                borderRadius: BorderRadius.circular(15),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.only(left:30,right: 30,top: 10),
+                  child: Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Text("Settings"),
+                      Padding(
+                        padding: const EdgeInsets.only(left:30,right: 30,top: 10),
+                        child: GestureDetector(
+                          onTap: ()
+                          {
+                            Navigator.push(context,MaterialPageRoute(builder: (context)=>GetAccountStatement( AccountNo: widget.AccountNo,)));
+                          },
+                          child: Container(
+                            width: MediaQuery.of(context).size.width,
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                              borderRadius: BorderRadius.circular(10)
+                            ),
+                            child:Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Text("Account Statement"),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left:30,right: 30,top: 10,bottom: 15),
+                        child: GestureDetector(
+                          onTap: ()
+                          {
+                            Navigator.push(context,MaterialPageRoute(builder: (context)=>ChangePassword(AccountNo: widget.AccountNo,)));
+                          },
+                          child: Container(
+                            width: MediaQuery.of(context).size.width,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: Colors.white,
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Text("Change Password"),
+                            ),
+                          ),
+                        ),
+                      ),
+
+                    ],
                   ),
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(left:30,right: 30,top: 10),
-              child: GestureDetector(
-                onTap: ()
-                {
-                  Navigator.push(context,MaterialPageRoute(builder: (context)=>ChangePassword(AccountNo: widget.AccountNo,)));
-                },
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: Colors.grey
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Text("Change MPIN"),
+           Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                    color: Color.fromARGB(255, 120, 245, 200)),
+                child: Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Padding(padding: const EdgeInsets.only(left:30,right: 30,top: 10),
+                      child: Text("Info"),),
+                      Padding(
+                        padding: const EdgeInsets.only(left:30,right: 30,top: 10),
+                        child: Container(
+                          width: MediaQuery.of(context).size.width,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: Colors.white
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Text("Help"),
+                          ),),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left:30,right: 30,top: 10),
+                        child: GestureDetector(
+                          onTap: ()
+                          {
+                            Navigator.push(context,MaterialPageRoute(builder: (context)=>PrivacyPolicy(AccountNo: widget.AccountNo,)));
+                          },
+                          child: Container(
+                            width: MediaQuery.of(context).size.width,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: Colors.white
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Text("Privacy Policy"),
+                            ),),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -82,44 +156,34 @@ class _ProfileState extends State<Profile> {
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
-                    color: Colors.grey
-                ),
+                    color: Color.fromARGB(255, 120, 245, 200)),
                 child: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Text("Help"),
-                ),),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left:30,right: 30,top: 10),
-              child: GestureDetector(
-                onTap: ()
-                {
-                  Navigator.push(context,MaterialPageRoute(builder: (context)=>PrivacyPolicy(AccountNo: widget.AccountNo,)));
-                },
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: Colors.grey
+                  padding: const EdgeInsets.only(left:30,right: 30,top: 10,bottom: 10),
+                  child: GestureDetector(
+                    onTap: ()
+                    {
+                      Navigator.push(context,MaterialPageRoute(builder: (context)=>Login()));
+                    },
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10)
+                      ),
+                      child:Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Text("Account Statement"),
+                      ),
+                    ),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Text("Privacy Policy"),
-                  ),),
-              ),
+                ))),
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Text("Made in 🇵🇰 with ❤️ for 🌎",textAlign: TextAlign.center,),
             ),
             Padding(
-              padding: const EdgeInsets.only(left:30,right: 30,top: 10),
-              child: Container(
-                width: MediaQuery.of(context).size.width,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.grey
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Text("Logout"),
-                ),),
+              padding: const EdgeInsets.all(12.0),
+              child: Text("Version 1.0.01 v"),
             )
           ],
         ),
